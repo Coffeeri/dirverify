@@ -1,0 +1,38 @@
+[package]
+name = "dirverify"
+version = "0.1.0"
+edition = "2021"
+authors = ["Leander Kohler"]
+description = "Verify equality of two root directories with multiple hash algorithms"
+license = "MIT"
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+sha2 = "0.10"
+md5 = "0.7"
+blake2 = "0.10"
+crc32fast = "1.4"
+xxhash-rust = { version = "0.8", features = ["xxh3"] }
+walkdir = "2.5"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+glob = "0.3"
+rayon = "1.10"
+
+[dev-dependencies]
+tempfile = "3.8"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"
+
+# Platform-specific dependencies
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3", features = ["fileapi", "handleapi", "winnt"] }
+
+[[bin]]
+name = "dirverify"
+path = "src/main.rs"

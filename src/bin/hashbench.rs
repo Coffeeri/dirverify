@@ -73,7 +73,7 @@ fn main() {
     );
 
     for alg in algorithms {
-        let alg_name = format!("{:?}", alg).to_lowercase();
+        let alg_name = format!("{alg:?}").to_lowercase();
         let algo: HashAlgorithm = alg.into();
 
         // Warmup (not timed)
@@ -99,10 +99,7 @@ fn main() {
         let avg_mib_s = (args.size_mib as f64) / avg.as_secs_f64();
         let best_mib_s = (args.size_mib as f64) / best.as_secs_f64();
 
-        println!(
-            "{:>7}  avg={:8.1} MiB/s  best={:8.1} MiB/s  digest={}",
-            alg_name, avg_mib_s, best_mib_s, last_digest
-        );
+        println!("{alg_name:>7}  avg={avg_mib_s:8.1} MiB/s  best={best_mib_s:8.1} MiB/s  digest={last_digest}");
     }
 }
 

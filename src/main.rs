@@ -141,7 +141,7 @@ fn generate_checksums(args: &Args) -> Result<(), Box<dyn std::error::Error>> {
         .collect();
 
     let total_files = files.len();
-    eprintln!("Found {} files to process", total_files);
+    eprintln!("Found {total_files} files to process");
 
     // Process files in parallel
     let results: Vec<_> = files
@@ -158,7 +158,7 @@ fn generate_checksums(args: &Args) -> Result<(), Box<dyn std::error::Error>> {
                 Ok(checksum_entry) => {
                     let count = processed.fetch_add(1, Ordering::Relaxed) + 1;
                     if args.verbose || count % 100 == 0 {
-                        eprint!("\rProcessed: {}/{}", count, total_files);
+                        eprint!("\rProcessed: {count}/{total_files}");
                     }
                     Some(checksum_entry)
                 }
@@ -171,7 +171,7 @@ fn generate_checksums(args: &Args) -> Result<(), Box<dyn std::error::Error>> {
         })
         .collect();
 
-    eprintln!("\rProcessed: {}/{}", total_files, total_files);
+    eprintln!("\rProcessed: {total_files}/{total_files}");
 
     entries.extend(results);
 
@@ -191,12 +191,12 @@ fn generate_checksums(args: &Args) -> Result<(), Box<dyn std::error::Error>> {
         fs::write(output_path, output_json)?;
         eprintln!("Checksums written to: {}", output_path.display());
     } else {
-        println!("{}", output_json);
+        println!("{output_json}");
     }
 
     let error_count = errors.load(Ordering::Relaxed);
     if error_count > 0 {
-        eprintln!("Warning: {} errors occurred during processing", error_count);
+        eprintln!("Warning: {error_count} errors occurred during processing");
     }
 
     Ok(())
@@ -275,7 +275,7 @@ fn verify_checksums(
                     if args.verbose {
                         eprintln!("OK: {}", entry.path);
                     } else if count % 100 == 0 {
-                        eprint!("\rVerified: {}/{}", count, total);
+                        eprint!("\rVerified: {count}/{total}");
                     }
                 }
                 VerifyResult::Failed(msg) => {
@@ -294,7 +294,7 @@ fn verify_checksums(
         })
         .collect();
 
-    eprintln!("\rVerified: {}/{}", total, total);
+    eprintln!("\rVerified: {total}/{total}");
 
     // Summary
     let ok_count = processed.load(Ordering::Relaxed);
@@ -302,10 +302,10 @@ fn verify_checksums(
     let skip_count = skipped.load(Ordering::Relaxed);
 
     eprintln!("\nSummary:");
-    eprintln!("  OK:      {}", ok_count);
-    eprintln!("  Failed:  {}", fail_count);
-    eprintln!("  Skipped: {}", skip_count);
-    eprintln!("  Total:   {}", total);
+    eprintln!("  OK:      {ok_count}");
+    eprintln!("  Failed:  {fail_count}");
+    eprintln!("  Skipped: {skip_count}");
+    eprintln!("  Total:   {total}");
 
     if fail_count > 0 {
         std::process::exit(1);
@@ -343,7 +343,7 @@ fn verify_single_file(
                     }
                 }
             }
-            Err(e) => return VerifyResult::Failed(format!("Cannot read metadata: {}", e)),
+            Err(e) => return VerifyResult::Failed(format!("Cannot read metadata: {e}")),
         }
     }
 
@@ -355,6 +355,6 @@ fn verify_single_file(
                 VerifyResult::Failed(format!("Hash mismatch: expected {}, got {}", entry.hash, hash))
             }
         }
-        Err(e) => VerifyResult::Failed(format!("Cannot compute hash: {}", e)),
+        Err(e) => VerifyResult::Failed(format!("Cannot compute hash: {e}")),
     }
 }

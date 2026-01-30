@@ -21,7 +21,7 @@ fn test_generate_checksums_basic() {
     create_test_file(dir.path(), "file2.txt", b"Test content");
     
     let output = Command::new("cargo")
-        .args(&["run", "--bin", "dirverify", "--", dir.path().to_str().unwrap()])
+        .args(["run", "--bin", "dirverify", "--", dir.path().to_str().unwrap()])
         .output()
         .expect("Failed to execute command");
     
@@ -48,7 +48,7 @@ fn test_verify_checksums() {
     // Generate checksums
     let checksum_file = source_dir.path().join("checksums.json");
     let output = Command::new("cargo")
-        .args(&[
+        .args([
             "run", "--bin", "dirverify", "--",
             source_dir.path().to_str().unwrap(),
             "-o", checksum_file.to_str().unwrap()
@@ -60,7 +60,7 @@ fn test_verify_checksums() {
     
     // Verify checksums
     let output = Command::new("cargo")
-        .args(&[
+        .args([
             "run", "--bin", "dirverify", "--",
             target_dir.path().to_str().unwrap(),
             "-c", checksum_file.to_str().unwrap()
@@ -81,7 +81,7 @@ fn test_exclude_patterns() {
     create_test_file(dir.path(), ".git/config", b"Exclude git");
     
     let output = Command::new("cargo")
-        .args(&[
+        .args([
             "run", "--bin", "dirverify", "--",
             dir.path().to_str().unwrap(),
             "-e", "*.tmp",
@@ -94,7 +94,7 @@ fn test_exclude_patterns() {
     let stdout = String::from_utf8(output.stdout).unwrap();
     
     // Debug output
-    eprintln!("Output JSON: {}", stdout);
+    eprintln!("Output JSON: {stdout}");
     
     assert!(stdout.contains("include.txt"));
     assert!(!stdout.contains("exclude.tmp"));
@@ -110,7 +110,7 @@ fn test_different_algorithms() {
     
     for algo in algorithms {
         let output = Command::new("cargo")
-            .args(&[
+            .args([
                 "run", "--bin", "dirverify", "--",
                 dir.path().to_str().unwrap(),
                 "-a", algo
@@ -118,10 +118,10 @@ fn test_different_algorithms() {
             .output()
             .expect("Failed to execute command");
         
-        assert!(output.status.success(), "Algorithm {} should work", algo);
+        assert!(output.status.success(), "Algorithm {algo} should work");
         let stdout = String::from_utf8(output.stdout).unwrap();
         let expected = if algo == "blake" { "blake3" } else { algo };
-        assert!(stdout.contains(&format!("\"algorithm\": \"{}\"", expected)));
+        assert!(stdout.contains(&format!("\"algorithm\": \"{expected}\"")));
     }
 }
 
@@ -137,7 +137,7 @@ fn test_verify_failed_checksum() {
     // Generate checksums
     let checksum_file = source_dir.path().join("checksums.json");
     Command::new("cargo")
-        .args(&[
+        .args([
             "run", "--bin", "dirverify", "--",
             source_dir.path().to_str().unwrap(),
             "-o", checksum_file.to_str().unwrap()
@@ -147,7 +147,7 @@ fn test_verify_failed_checksum() {
     
     // Verify should fail
     let output = Command::new("cargo")
-        .args(&[
+        .args([
             "run", "--bin", "dirverify", "--",
             target_dir.path().to_str().unwrap(),
             "-c", checksum_file.to_str().unwrap()
@@ -169,7 +169,7 @@ fn test_subdirectories() {
     create_test_file(dir.path(), "sub1/sub2/file2.txt", b"Nested file");
     
     let output = Command::new("cargo")
-        .args(&["run", "--bin", "dirverify", "--", dir.path().to_str().unwrap()])
+        .args(["run", "--bin", "dirverify", "--", dir.path().to_str().unwrap()])
         .output()
         .expect("Failed to execute command");
     
@@ -187,7 +187,7 @@ fn test_verbose_mode() {
     create_test_file(dir.path(), "test.txt", b"Test");
     
     let output = Command::new("cargo")
-        .args(&[
+        .args([
             "run", "--bin", "dirverify", "--",
             dir.path().to_str().unwrap(),
             "-v"

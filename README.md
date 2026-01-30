@@ -5,7 +5,7 @@ A fast, cross-platform tool to verify the equality of directories across differe
 ## Features
 
 - **Multiple hash algorithms**: SHA256, MD5, CRC32, BLAKE2, BLAKE3, XXH3
-- **Cross-platform**: Static binaries for Linux (x64/ARM64), Windows (x64), macOS (ARM64)
+- **Cross-platform**: Static binaries for Linux (x64/ARM64), Windows (x64/ARM64), macOS (ARM64/x64/universal)
 - **Parallel processing**: Utilizes all CPU cores for fast hashing
 - **Flexible verification**: Compare directories across different machines
 - **Exclusion patterns**: Skip unwanted files/directories using glob patterns
@@ -16,10 +16,13 @@ A fast, cross-platform tool to verify the equality of directories across differe
 
 Download the appropriate binary for your platform from the releases page:
 
-- `dirverify-linux-x64` - Linux x86_64
-- `dirverify-linux-arm64` - Linux ARM64
-- `dirverify-windows-x64.exe` - Windows x64
-- `dirverify-macos-arm64` - macOS ARM64 (Apple Silicon)
+- `dirverify-macos-arm64.tar.gz` - macOS Apple Silicon
+- `dirverify-macos-x64.tar.gz` - macOS Intel
+- `dirverify-macos-universal.tar.gz` - macOS Universal
+- `dirverify-linux-x64.tar.gz` - Linux x86_64 (musl)
+- `dirverify-linux-arm64.tar.gz` - Linux ARM64 (musl)
+- `dirverify-windows-x64.exe.zip` - Windows x64
+- `dirverify-windows-arm64.exe.zip` - Windows ARM64
 
 ## Usage
 
@@ -137,37 +140,6 @@ The tool generates JSON files with the following structure:
 }
 ```
 
-## Building from Source
-
-### Prerequisites
-- Rust 1.70 or later
-- For cross-compilation: `cross` tool
-
-### Build Commands
-```bash
-# Clone repository
-git clone https://github.com/yourusername/dirverify
-cd dirverify
-
-# Build for current platform
-cargo build --release
-
-# Build all platforms (Linux/macOS)
-chmod +x build.sh
-./build.sh
-```
-
-### Project Structure
-```
-dirverify/
-├── src/
-│   ├── main.rs      # Main application logic
-│   └── hashing.rs   # Hash algorithm implementations
-├── Cargo.toml       # Dependencies and build configuration
-├── build.sh         # Cross-compilation script
-└── README.md        # This file
-```
-
 ## Performance
 
 Performance varies by algorithm and file size:
@@ -226,43 +198,3 @@ Tune the benchmark size/chunking and optionally select specific algorithms:
 ```bash
 cargo run --release --bin hashbench -- --size-mib 1024 --chunk-kib 64 --iters 3 --alg blake3 --alg sha256 --alg xxh3
 ```
-
-## Error Handling
-
-The tool provides clear error messages:
-- Missing files are reported
-- Permission errors are logged
-- Hash mismatches show expected vs actual
-- Exit code 1 on verification failure
-
-## License
-
-MIT License - See LICENSE file for details
-
-## Contributing
-
-Contributions welcome! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## Troubleshooting
-
-### "File not found" errors during verification
-- Check if the root directory (-r) is correct
-- Ensure relative paths match between source and target
-
-### "Permission denied" errors
-- Run with appropriate permissions
-- Some system files may require elevated privileges
-
-### Different results between algorithms
-- This is expected - each algorithm produces different hash values
-- Use the same algorithm for generation and verification
-
-### Slow performance
-- Use faster algorithms (xxh3, crc32) for large datasets
-- Adjust thread count with -t option
-- Exclude unnecessary large files

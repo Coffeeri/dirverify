@@ -216,8 +216,4 @@ jobs:
             # Verify checksums
             dirverify -c checksums.json -r /path/to/target
             ```
-            
-            ## Changelog
-            
-            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.
           token: ${{ secrets.GITHUB_TOKEN }}

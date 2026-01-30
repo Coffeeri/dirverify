@@ -1,4 +1,5 @@
 use blake2::{Blake2s256, Digest as Blake2Digest};
+use blake3;
 use crc32fast::Hasher as Crc32Hasher;
 use md5;
 use sha2::Sha256;
@@ -13,6 +14,7 @@ pub enum HashAlgorithm {
     Md5,
     Crc32,
     Blake2,
+    Blake3,
     Xxh3,
 }
 
@@ -64,6 +66,17 @@ pub fn hash_file(path: &Path, algorithm: HashAlgorithm) -> io::Result<String> {
                 hasher.update(&buffer[..bytes_read]);
             }
             Ok(format!("{:x}", hasher.finalize()))
+        }
+        HashAlgorithm::Blake3 => {
+            let mut hasher = blake3::Hasher::new();
+            loop {
+                let bytes_read = file.read(&mut buffer)?;
+                if bytes_read == 0 {
+                    break;
+                }
+                hasher.update(&buffer[..bytes_read]);
+            }
+            Ok(hasher.finalize().to_hex().to_string())
         }
         HashAlgorithm::Xxh3 => {
             let mut hasher = Xxh3::new();

@@ -10,8 +10,7 @@ use std::sync::Arc;
 use std::time::SystemTime;
 use walkdir::WalkDir;
 
-mod hashing;
-use hashing::{hash_file, HashAlgorithm};
+use dirverify::hashing::{hash_file, HashAlgorithm};
 
 #[derive(Debug, Clone, Copy, ValueEnum)]
 enum Algorithm {
@@ -19,6 +18,8 @@ enum Algorithm {
     Md5,
     Crc32,
     Blake2,
+    #[value(alias = "blake")]
+    Blake3,
     Xxh3,
 }
 
@@ -29,6 +30,7 @@ impl From<Algorithm> for HashAlgorithm {
             Algorithm::Md5 => HashAlgorithm::Md5,
             Algorithm::Crc32 => HashAlgorithm::Crc32,
             Algorithm::Blake2 => HashAlgorithm::Blake2,
+            Algorithm::Blake3 => HashAlgorithm::Blake3,
             Algorithm::Xxh3 => HashAlgorithm::Xxh3,
         }
     }
@@ -251,6 +253,7 @@ fn verify_checksums(
         "md5" => HashAlgorithm::Md5,
         "crc32" => HashAlgorithm::Crc32,
         "blake2" => HashAlgorithm::Blake2,
+        "blake3" | "blake" => HashAlgorithm::Blake3,
         "xxh3" => HashAlgorithm::Xxh3,
         _ => {
             eprintln!("Warning: Unknown algorithm '{}', using SHA256", checksum_file.algorithm);
